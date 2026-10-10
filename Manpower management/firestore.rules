@@ -1,0 +1,48 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Internal & Sensitive Collections: Strictly Authenticated Only
+    match /users/{userId} {
+      allow read, write: if request.auth != null;
+    }
+    match /expenses/{expenseId} {
+      allow read, write: if request.auth != null;
+    }
+    match /workers/{workerId} {
+      allow read, write: if request.auth != null;
+    }
+
+    // Settings (Business profile, Bank info for UPI): Public read for invoices/portal, Auth write
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // Client Portal Accessible Collections: Public read for client views, Auth write
+    match /clients/{clientId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /invoices/{invoiceId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /jobs/{jobId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /payments/{paymentId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // QR-Registered Workers: Public create (registration), auth for management
+    match /registered_workers/{workerId} {
+      allow create: if true;
+      allow read: if true;
+      allow update, delete: if request.auth != null;
+    }
+  }
+}
